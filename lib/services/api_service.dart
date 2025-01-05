@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:recipesapp/models/recipe_detail_model.dart';
+import 'package:recipesapp/models/recipe_list_model.dart';
 import 'package:recipesapp/models/recipe_model.dart';
 
 class ApiService {
@@ -24,14 +26,14 @@ class ApiService {
   }
 
   /// Fetch recipe details by ID
-  Future<Recipe> fetchRecipeDetails(int id) async {
-    final url = Uri.parse('$baseUrl/$id/information?apiKey=$apiKey');
+  Future<RecipeDetail> fetchRecipeDetails(int recipeId) async {
+    final url = Uri.parse('$baseUrl/$recipeId/information?apiKey=$apiKey');
 
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-      return Recipe.fromJson(data);
+      return RecipeDetail.fromJson(data);
     } else {
       throw Exception('Failed to load recipe details');
     }
@@ -54,7 +56,7 @@ class ApiService {
   }
 
   /// Fetch list of recipes for infinite scrolling
-  Future<List<Recipe>> fetchRecipeList({int number = 50, int offset = 0}) async {
+  Future<List<RecipeList>> fetchRecipeList({int number = 100, int offset = 0}) async {
     final url = Uri.parse(
         '$baseUrl/complexSearch?number=$number&offset=$offset&apiKey=$apiKey');
 
@@ -64,7 +66,7 @@ class ApiService {
       final data = json.decode(response.body);
       final List recipes = data['results'];
 
-      return recipes.map((json) => Recipe.fromJson(json)).toList();
+      return recipes.map((json) => RecipeList.fromJson(json)).toList();
     } else {
       throw Exception('Failed to load recipe list');
     }
